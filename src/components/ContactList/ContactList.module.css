@@ -1,0 +1,29 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  /* background-color: aqua; */
+}
+
+.list ul {
+  list-style-type: disc;
+  color: black;
+  padding: 0;
+  margin-left: 20px;
+}
+
+.list li {
+  margin-top: 15px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  list-style-type: disc;
+}
+
+.list li button {
+  background-color: rgb(255, 0, 13);
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: 30px;
+  border-radius: 5px;
+}

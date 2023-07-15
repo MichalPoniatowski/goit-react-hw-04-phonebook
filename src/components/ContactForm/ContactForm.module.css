@@ -1,0 +1,28 @@
+.contact {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  gap: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  background-color: aliceblue;
+}
+
+.contact input {
+  height: 20px;
+}
+
+.contact__button {
+  background-color: aqua;
+  width: 120px;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.contact__button:hover {
+  cursor: pointer;
+}
