@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import React from 'react';
 import './App.css';
@@ -7,22 +7,19 @@ import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 
-// comment to delete
+export const App = () => {
+  const [contacts, setContacts] = useState();
+  const [filter, setFilter] = useState();
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
-
-  constructor() {
-    super();
+  useEffect(() => {
     const savedContacts = localStorage.getItem('contacts');
     const parsedContacts = JSON.parse(savedContacts);
-    this.state.contacts = parsedContacts || [];
-  }
+    if (parsedContacts) {
+      setContacts({ contacts: parsedContacts });
+    }
+  }, []);
 
-  addNewContact = event => {
+  const addNewContact = event => {
     event.preventDefault();
 
     const nameValue = event.target.elements.name.value;
@@ -44,18 +41,16 @@ export class App extends Component {
     if (!isNameValid) {
       errorMessage += 'Invalid name input. ';
     }
-
     if (!isNumberValid) {
       errorMessage += 'Invalid number input.';
     }
-
     if (errorMessage) {
       alert(errorMessage);
       return;
     }
 
     if (
-      this.state.contacts.some(
+      contacts.some(
         contact =>
           contact.name.toLowerCase() === newContact.name.toLowerCase() ||
           contact.number.toLowerCase() === newContact.number.toLowerCase()
@@ -63,32 +58,28 @@ export class App extends Component {
     ) {
       alert(`${newContact.name} already in contacts`);
     } else {
-      this.setState(prevState => ({
-        contacts: [...prevState.contacts, newContact],
+      setContacts(prevContacts => ({
+        contacts: [...prevContacts.contacts, newContact],
       }));
       event.target.reset();
     }
   };
 
-  deleteContact = idToDelete => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== idToDelete),
+  const deleteContact = idToDelete => {
+    setContacts(prevContacts => ({
+      contacts: prevContacts.contacts.filter(
+        contact => contact.id !== idToDelete
+      ),
     }));
   };
 
-  setStateInput = event => {
-    const { name, value } = event.target;
-    this.setState({ [name]: value });
-  };
-
-  filterContacts = event => {
-    this.setState({
+  const filterContacts = event => {
+    setFilter({
       filter: event.target.value,
     });
   };
 
-  renderContacts = () => {
-    const { filter, contacts } = this.state;
+  const renderContacts = () => {
     const filteredContacts = contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
@@ -96,28 +87,21 @@ export class App extends Component {
     return filteredContacts.map(contact => (
       <li key={contact.id}>
         {contact.name}: {contact.number}
-        <button onClick={() => this.deleteContact(contact.id)}>delete</button>
+        <button onClick={() => deleteContact(contact.id)}>delete</button>
       </li>
     ));
   };
 
-  componentDidUpdate() {
+  useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-  }
+  }, [contacts]);
 
-  render() {
-    return (
-      <div className="wrapper">
-        <ContactForm
-          submit={this.addNewContact}
-          contacts={this.state.contacts}
-        />
-        <ContactList list={this.renderContacts()}>
-          <Filter filteredContacts={this.filterContacts} />
-        </ContactList>
-      </div>
-    );
-  }
-}
-
-export default App;
+  return (
+    <div className="wrapper">
+      <ContactForm submit={addNewContact()} contacts={contacts} />
+      <ContactList list={renderContacts()}>
+        <Filter filteredContacts={filterContacts()} />
+      </ContactList>
+    </div>
+  );
+};
