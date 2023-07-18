@@ -8,14 +8,14 @@ import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 
 export const App = () => {
-  const [contacts, setContacts] = useState();
-  const [filter, setFilter] = useState();
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     const savedContacts = localStorage.getItem('contacts');
     const parsedContacts = JSON.parse(savedContacts);
     if (parsedContacts) {
-      setContacts({ contacts: parsedContacts });
+      setContacts(parsedContacts);
     }
   }, []);
 
@@ -29,8 +29,8 @@ export const App = () => {
 
     const newContact = {
       id: nanoid(),
-      name: event.target.elements.name.value,
-      number: event.target.elements.number.value,
+      name: nameValue,
+      number: numberValue,
     };
 
     const isNameValid = namePattern.test(nameValue);
@@ -58,25 +58,19 @@ export const App = () => {
     ) {
       alert(`${newContact.name} already in contacts`);
     } else {
-      setContacts(prevContacts => ({
-        contacts: [...prevContacts.contacts, newContact],
-      }));
+      setContacts(prevContacts => [...prevContacts, newContact]);
       event.target.reset();
     }
   };
 
   const deleteContact = idToDelete => {
-    setContacts(prevContacts => ({
-      contacts: prevContacts.contacts.filter(
-        contact => contact.id !== idToDelete
-      ),
-    }));
+    setContacts(prevContacts =>
+      prevContacts.filter(contact => contact.id !== idToDelete)
+    );
   };
 
   const filterContacts = event => {
-    setFilter({
-      filter: event.target.value,
-    });
+    setFilter(event.target.value);
   };
 
   const renderContacts = () => {
@@ -93,14 +87,14 @@ export const App = () => {
   };
 
   useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   return (
     <div className="wrapper">
-      <ContactForm submit={addNewContact()} contacts={contacts} />
+      <ContactForm submit={addNewContact} />
       <ContactList list={renderContacts()}>
-        <Filter filteredContacts={filterContacts()} />
+        <Filter filteredContacts={filterContacts} />
       </ContactList>
     </div>
   );
